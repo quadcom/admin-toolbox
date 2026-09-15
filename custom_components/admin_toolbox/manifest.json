@@ -1,0 +1,19 @@
+{
+  "domain": "admin_toolbox",
+  "name": "Admin Toolbox",
+  "version": "1.0.0",
+  "config_flow": true,
+  "documentation": "https://github.com/Quadcom/admin-toolbox",
+  "issue_tracker": "https://github.com/Quadcom/admin-toolbox",
+  "codeowners": [
+    "@Quadcom"
+  ],
+  "iot_class": "local_push",
+  "integration_type": "service",
+  "dependencies": [
+    "frontend",
+    "http",
+    "websocket_api"
+  ],
+  "single_config_entry": true
+}

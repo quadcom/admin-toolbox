@@ -1,0 +1,39 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add Admin Toolbox",
+        "description": "Adds the Admin Toolbox panel to the sidebar. Only one instance is allowed; all its settings can be changed afterwards from Configure."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Admin Toolbox is already set up."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Admin Toolbox settings",
+        "description": "Links are edited on the panel itself, not here.",
+        "data": {
+          "title": "Sidebar title",
+          "icon": "Sidebar icon",
+          "admin_only": "Restrict to admin users",
+          "hidden_heading": "Heading above the hidden panels list",
+          "extra_heading": "Heading above the links list",
+          "chart_hours": "Hours of history shown on the trend charts",
+          "stats": "Sensors shown as stat tiles"
+        },
+        "data_description": {
+          "title": "The name shown for this entry in the sidebar.",
+          "icon": "The icon shown for this entry in the sidebar.",
+          "admin_only": "When on, only admin users can see and open the panel.",
+          "hidden_heading": "Leave blank to use the panel's own default wording.",
+          "extra_heading": "Leave blank to use the panel's own default wording.",
+          "chart_hours": "How many hours of history the trend lines cover, from 1 to 168.",
+          "stats": "Sensor entities shown as stat tiles at the top of the panel."
+        }
+      }
+    }
+  }
+}
