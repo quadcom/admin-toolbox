@@ -42,8 +42,12 @@ not anyone else's.
 
 ## Install
 
-Add this repository to HACS as a custom repository with the category
-**Integration**, install it, then **restart Home Assistant**.
+[![Open your Home Assistant instance and open this repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=quadcom&repository=admin-toolbox&category=integration)
+
+Click the button above to open this straight in your own HACS, install it, then
+**restart Home Assistant**. If the button does not work for you, add this
+repository to HACS by hand as a custom repository with the category
+**Integration** instead.
 
 Then go to **Settings > Devices & services**, click **Add integration**, and
 choose **Admin Toolbox**. That is the whole setup - the sidebar entry appears
