@@ -104,32 +104,72 @@ function pin() {
 }
 
 // The placement survives navigation and idle redraws, but not a panel being
-// added or removed, so the observer puts it back rather than leaving it
-// adrift. It is also what clears the copies a restart leaves behind, since
+// added or removed, so the observers put it back rather than leaving it
+// adrift. They are also what clears the copies a restart leaves behind, since
 // panels arrive one at a time and each arrival rebuilds the list.
-function watch() {
-  const shadow = sidebarShadow();
-  if (!shadow) return;
-  let busy = false;
-  const observer = new MutationObserver(() => {
-    if (busy) return; // our own moves must not retrigger this
-    busy = true;
-    requestAnimationFrame(() => {
-      pin();
-      busy = false;
-    });
+//
+// Two of them, because a MutationObserver does not cross a shadow boundary:
+// one inside the sidebar for the list being rebuilt, and one on the element
+// that owns the sidebar, so a sidebar thrown away and rebuilt while Home
+// Assistant reconnects is noticed at all.
+let sidebarObserver = null;
+let observedShadow = null;
+let mainObserver = null;
+let busy = false;
+
+function apply() {
+  if (busy) return; // our own moves must not retrigger this
+  busy = true;
+  requestAnimationFrame(() => {
+    watch();
+    pin();
+    busy = false;
   });
-  observer.observe(shadow, { childList: true, subtree: true });
 }
 
-// The sidebar is not there on the first frame. Give it a while, then stop
-// rather than polling this page forever - a page where the sidebar never
-// appears is one where there is nothing to place.
+// Rebinds when the sidebar is not the one already being watched. Without this
+// a page that lived through a restart holds an observer on a detached tree,
+// which never fires again and never places anything.
+function watch() {
+  const shadow = sidebarShadow();
+  if (!shadow || shadow === observedShadow) return;
+  if (sidebarObserver) sidebarObserver.disconnect();
+  sidebarObserver = new MutationObserver(apply);
+  sidebarObserver.observe(shadow, { childList: true, subtree: true });
+  observedShadow = shadow;
+}
+
+function watchMain() {
+  if (mainObserver) return;
+  const ha = document.querySelector("home-assistant");
+  const main = ha && ha.shadowRoot && ha.shadowRoot.querySelector("home-assistant-main");
+  if (!main || !main.shadowRoot) return;
+  // Direct children only: the sidebar is one of them, and the panel content
+  // beside it changes constantly on a normal dashboard.
+  mainObserver = new MutationObserver(apply);
+  mainObserver.observe(main.shadowRoot, { childList: true });
+}
+
+// The sidebar is not there on the first frame, and after a restart the panel
+// can be minutes behind it. Watching starts the moment the sidebar exists,
+// whether or not the entry has arrived yet - waiting for a successful
+// placement before watching is what left restarts broken until a reload.
 let attempts = 0;
 const timer = setInterval(() => {
   attempts += 1;
-  if (pin() || attempts > 40) {
+  watchMain();
+  watch();
+  const placed = pin();
+  if ((placed && observedShadow) || attempts > 40) {
     clearInterval(timer);
-    if (attempts <= 40) watch();
+    if (!observedShadow) {
+      // Refuse quietly in the sidebar, loudly in the log: a page with no
+      // sidebar has nothing to place, but a page that should have one and
+      // does not is a fault someone needs to see.
+      console.error(
+        "Admin Toolbox: no sidebar found after 20 seconds, so its entry has " +
+          "been left where Home Assistant put it. Reload the page to try again."
+      );
+    }
   }
 }, 500);

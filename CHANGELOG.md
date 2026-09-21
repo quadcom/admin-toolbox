@@ -4,6 +4,14 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 1.1.1 - 2026-09-21
+
+### Fixed
+
+- The Admin Toolbox entry now finds its way to the bottom of the sidebar after
+  a Home Assistant restart. Before this it could be left up in the list until
+  you reloaded the page.
+
 ## 1.1.0 - 2026-09-21
 
 ### Added
