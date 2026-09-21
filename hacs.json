@@ -1,5 +1,7 @@
 {
   "name": "Admin Toolbox",
   "homeassistant": "2024.6.0",
-  "render_readme": true
+  "render_readme": true,
+  "zip_release": true,
+  "filename": "admin_toolbox.zip"
 }

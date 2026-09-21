@@ -1,0 +1,51 @@
+# Attaches the integration as a zip to every published release. HACS installs
+# from that file rather than from the source, and GitHub counts each download.
+#
+# The archive must hold the contents of custom_components/admin_toolbox at its
+# root - HACS unpacks it straight into place with no relocation step, so a zip
+# of the folder rather than its contents installs one level too deep and every
+# updated installation loses its manifest. Both checks below exist to make that
+# impossible to publish rather than merely unlikely.
+name: Publish
+
+on:
+  release:
+    types:
+      - published
+
+permissions: {}
+
+jobs:
+  zip:
+    name: Attach the integration zip
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Check the integration is there before packing
+        run: |
+          if [ ! -f custom_components/admin_toolbox/manifest.json ]; then
+            echo "::error::custom_components/admin_toolbox/manifest.json is missing, so there is nothing safe to package. No asset has been attached."
+            exit 1
+          fi
+
+      - name: Pack the contents of the integration folder
+        run: |
+          cd custom_components/admin_toolbox
+          zip admin_toolbox.zip -r ./ -x "__pycache__/*"
+
+      - name: Check the archive has the manifest at its root
+        run: |
+          cd custom_components/admin_toolbox
+          if ! unzip -l admin_toolbox.zip | grep -qE ' manifest\.json$'; then
+            echo "::error::admin_toolbox.zip does not hold manifest.json at its root, which would install one level too deep and break every update. No asset has been attached."
+            unzip -l admin_toolbox.zip
+            exit 1
+          fi
+
+      - name: Attach it to the release
+        uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3.0.2
+        with:
+          files: custom_components/admin_toolbox/admin_toolbox.zip
