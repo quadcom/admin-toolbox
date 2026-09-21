@@ -19,6 +19,7 @@ from .const import (
     CHART_HOURS_MAX,
     CHART_HOURS_MIN,
     CONF_ADMIN_ONLY,
+    CONF_PIN_ABOVE_SETTINGS,
     CONF_CHART_HOURS,
     CONF_EXTRA,
     CONF_EXTRA_HEADING,
@@ -72,6 +73,10 @@ class AdminToolboxOptionsFlow(OptionsFlow):
                 vol.Required(CONF_ICON, default=current[CONF_ICON]): selector.IconSelector(),
                 vol.Required(
                     CONF_ADMIN_ONLY, default=current[CONF_ADMIN_ONLY]
+                ): selector.BooleanSelector(),
+                vol.Required(
+                    CONF_PIN_ABOVE_SETTINGS,
+                    default=current[CONF_PIN_ABOVE_SETTINGS],
                 ): selector.BooleanSelector(),
                 vol.Optional(
                     CONF_HIDDEN_HEADING, default=current[CONF_HIDDEN_HEADING]

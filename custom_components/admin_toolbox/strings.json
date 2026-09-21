@@ -22,7 +22,8 @@
           "hidden_heading": "Heading above the hidden panels list",
           "extra_heading": "Heading above the links list",
           "chart_hours": "Hours of history shown on the trend charts",
-          "stats": "Sensors shown as stat tiles"
+          "stats": "Sensors shown as stat tiles",
+          "pin_above_settings": "Pin to the bottom of the sidebar"
         },
         "data_description": {
           "title": "The name shown for this entry in the sidebar.",
@@ -31,7 +32,8 @@
           "hidden_heading": "Leave blank to use the panel's own default wording.",
           "extra_heading": "Leave blank to use the panel's own default wording.",
           "chart_hours": "How many hours of history the trend lines cover, from 1 to 168.",
-          "stats": "Sensor entities shown as stat tiles at the top of the panel."
+          "stats": "Sensor entities shown as stat tiles at the top of the panel.",
+          "pin_above_settings": "When on, the Admin Toolbox entry sits at the bottom of the sidebar, just above Settings, instead of at the end of the list."
         }
       }
     }

@@ -4,6 +4,14 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 1.1.0 - 2026-09-21
+
+### Added
+
+- Admin Toolbox now sits at the bottom of your sidebar, just above Settings,
+  rather than at the end of the list. Turn it off in Configure if you would
+  rather it stayed with the rest.
+
 ## 1.0.0 - 2026-09-14
 
 First release.

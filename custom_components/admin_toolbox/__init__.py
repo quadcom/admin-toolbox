@@ -22,6 +22,8 @@ from .const import (
     DEFAULT_OPTIONS,
     DOMAIN,
     JS_FILENAME,
+    PIN_JS_FILENAME,
+    PIN_STATIC_PATH_URL,
     PANEL_COMPONENT_NAME,
     PANEL_CUSTOM_NAME,
     PANEL_MODULE_URL,
@@ -43,26 +45,41 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})
 
     if not hass.data[DOMAIN].get(_DATA_STATIC_PATH_REGISTERED):
-        js_path = os.path.join(os.path.dirname(__file__), JS_FILENAME)
+        here = os.path.dirname(__file__)
+        js_path = os.path.join(here, JS_FILENAME)
+        pin_path = os.path.join(here, PIN_JS_FILENAME)
 
-        def _js_exists() -> bool:
-            return os.path.isfile(js_path)
+        def _missing() -> str | None:
+            for path in (js_path, pin_path):
+                if not os.path.isfile(path):
+                    return path
+            return None
 
-        if not await hass.async_add_executor_job(_js_exists):
-            _LOGGER.error("Admin Toolbox frontend file not found at %s", js_path)
+        absent = await hass.async_add_executor_job(_missing)
+        if absent:
+            _LOGGER.error("Admin Toolbox frontend file not found at %s", absent)
             raise ConfigEntryNotReady(
-                f"Admin Toolbox frontend file not found at {js_path}"
+                f"Admin Toolbox frontend file not found at {absent}"
             )
 
         try:
             await hass.http.async_register_static_paths(
-                [StaticPathConfig(STATIC_PATH_URL, js_path, False)]
+                [
+                    StaticPathConfig(STATIC_PATH_URL, js_path, False),
+                    StaticPathConfig(PIN_STATIC_PATH_URL, pin_path, False),
+                ]
             )
         except Exception as err:  # noqa: BLE001 - name the reason, never render nothing
             _LOGGER.error("Could not register Admin Toolbox static path: %s", err)
             raise ConfigEntryNotReady(
                 f"Could not register Admin Toolbox static path: {err}"
             ) from err
+
+        # Loaded on every page, so the sidebar placement survives navigating
+        # anywhere. There is no counterpart that removes a module once added,
+        # so it is always loaded and the module itself reads the setting and
+        # does nothing when it is off.
+        frontend.add_extra_js_url(hass, PIN_STATIC_PATH_URL)
 
         hass.data[DOMAIN][_DATA_STATIC_PATH_REGISTERED] = True
 
